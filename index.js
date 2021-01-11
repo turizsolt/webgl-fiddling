@@ -1,5 +1,5 @@
 window.addEventListener('DOMContentLoaded', () => {
-    const count = 2000;
+    const count = 6000;
     const objects = [];
     for (let i = 0; i < count; i++) {
         objects.push({
@@ -20,9 +20,10 @@ window.addEventListener('DOMContentLoaded', () => {
         const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 3, new BABYLON.Vector3(0, 0, 0));
         camera.attachControl(canvas, true);
         const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0));
+        const boxMesh = BABYLON.MeshBuilder.CreateBox("box", {});
         const boxes = [];
         for (let i = 0; i < count; i++) {
-            boxes.push(BABYLON.MeshBuilder.CreateBox("box", {}));
+            boxes.push(boxMesh.createInstance());
         }
         return { scene, boxes };
     }
