@@ -19,4 +19,8 @@ window.addEventListener('DOMContentLoaded', () => {
         scene.render();
         fpsLabel.innerHTML = renderEngine.getFps().toFixed() + " fps";
     });
+
+    window.addEventListener("resize", function () {
+        engine.resize();
+    });
 });
