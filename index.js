@@ -1,7 +1,7 @@
 window.addEventListener('DOMContentLoaded', () => {
-    const canvas = document.getElementById(
-        'render-canvas'
-    );
+    const canvas = document.getElementById('render-canvas');
+    const fpsLabel = document.getElementById("fps-label");
+
     const renderEngine = new BABYLON.Engine(canvas, true);
     const createScene = () => {
         const scene = new BABYLON.Scene(renderEngine);
@@ -17,5 +17,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
     renderEngine.runRenderLoop(() => {
         scene.render();
+        fpsLabel.innerHTML = renderEngine.getFps().toFixed() + " fps";
     });
 });
