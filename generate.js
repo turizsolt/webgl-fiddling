@@ -34,14 +34,14 @@ function generateTerrain(size) {
         }
     }
 
-    raiseHill(Math.random() * size | 0, Math.random() * size | 0, 10);
-    raiseHill(Math.random() * size | 0, Math.random() * size | 0, 8);
-    raiseHill(Math.random() * size | 0, Math.random() * size | 0, 8);
-    raiseHill(Math.random() * size | 0, Math.random() * size | 0, 6);
-    raiseHill(Math.random() * size | 0, Math.random() * size | 0, 6);
-    raiseHill(Math.random() * size | 0, Math.random() * size | 0, 6);
-    raiseHill(Math.random() * size | 0, Math.random() * size | 0, 4);
-    raiseHill(Math.random() * size | 0, Math.random() * size | 0, 4);
+    // raiseHill(Math.random() * size | 0, Math.random() * size | 0, 10);
+    // raiseHill(Math.random() * size | 0, Math.random() * size | 0, 8);
+    // raiseHill(Math.random() * size | 0, Math.random() * size | 0, 8);
+    // raiseHill(Math.random() * size | 0, Math.random() * size | 0, 6);
+    // raiseHill(Math.random() * size | 0, Math.random() * size | 0, 6);
+    // raiseHill(Math.random() * size | 0, Math.random() * size | 0, 6);
+    // raiseHill(Math.random() * size | 0, Math.random() * size | 0, 4);
+    // raiseHill(Math.random() * size | 0, Math.random() * size | 0, 4);
     raiseHill(Math.random() * size | 0, Math.random() * size | 0, 4);
     raiseHill(Math.random() * size | 0, Math.random() * size | 0, 4);
 
@@ -49,26 +49,15 @@ function generateTerrain(size) {
 }
 
 function adjacentPoints(x, z) {
-    if (z % 2 === 0) {
-        return [
-            { x: x - 1, z: z },
-            { x: x - 1, z: z + 1 },
-            { x: x, z: z + 1 },
-            { x: x + 1, z: z },
-            { x: x, z: z - 1 },
-            { x: x - 1, z: z - 1 }
-        ];
-    } else {
-        return [
-            { x: x - 1, z: z },
-            { x: x, z: z + 1 },
-            { x: x + 1, z: z + 1 },
-            { x: x + 1, z: z },
-            { x: x + 1, z: z - 1 },
-            { x: x, z: z - 1 }
-        ];
-    }
+    return [
+        { x: x - 1, z: z },
+        { x: x - 1, z: z + 1 },
+        { x: x, z: z + 1 },
+        { x: x + 1, z: z },
+        { x: x + 1, z: z - 1 },
+        { x: x, z: z - 1 }
+    ];
 }
 
-const terrain = generateTerrain(1024);
+const terrain = generateTerrain(17);
 fs.writeFileSync('terrain.js', 'const terrain = ' + JSON.stringify(terrain) + ';', 'utf8');

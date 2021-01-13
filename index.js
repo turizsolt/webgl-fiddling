@@ -2,8 +2,8 @@ window.addEventListener('DOMContentLoaded', () => {
     let framesElapsed = 0;
 
     const createGround = function (scene) {
-        const halfsize = 512;
-        const size = 1023;
+        const halfsize = 8;
+        const size = 16;
 
         const ground = new BABYLON.Mesh('ground', scene);
         const baseColor = new BABYLON.Color3(0, 0.6, 0);
@@ -15,7 +15,7 @@ window.addEventListener('DOMContentLoaded', () => {
         const zunit = unit * sqrt3 / 2;
 
         const ptc = function (x, z) {
-            px = -(unit * halfsize) + (x * unit) + ((z % 2 == 0) ? 0 : halfunit);
+            px = -(unit * halfsize) + (x * unit) + (z * halfunit);
             pz = -(zunit * halfsize) + (z * zunit);
             h = terrain[x][z].h * unit;
 
@@ -30,23 +30,13 @@ window.addEventListener('DOMContentLoaded', () => {
         for (let z = 0; z < size; z++) {
             for (let x = 0; x < size; x++) {
 
-                if (z % 2 === 0) {
-                    positions.push(...ptc(x, z));
-                    positions.push(...ptc(x + 1, z));
-                    positions.push(...ptc(x, z + 1));
+                positions.push(...ptc(x, z));
+                positions.push(...ptc(x + 1, z));
+                positions.push(...ptc(x, z + 1));
 
-                    positions.push(...ptc(x + 1, z));
-                    positions.push(...ptc(x + 1, z + 1));
-                    positions.push(...ptc(x, z + 1));
-                } else {
-                    positions.push(...ptc(x, z));
-                    positions.push(...ptc(x + 1, z + 1));
-                    positions.push(...ptc(x, z + 1));
-
-                    positions.push(...ptc(x, z));
-                    positions.push(...ptc(x + 1, z));
-                    positions.push(...ptc(x + 1, z + 1));
-                }
+                positions.push(...ptc(x + 1, z));
+                positions.push(...ptc(x + 1, z + 1));
+                positions.push(...ptc(x, z + 1));
 
                 let isHill = false;
                 if (terrain[x][z].h > 0) isHill = true;
@@ -86,7 +76,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const createScene = () => {
         const scene = new BABYLON.Scene(renderEngine);
 
-        const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 10000, new BABYLON.Vector3(0, 0, 0));
+        const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 200, new BABYLON.Vector3(0, 0, 0));
         camera.attachControl(canvas, true);
         const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0));
         const ground = createGround(scene);
