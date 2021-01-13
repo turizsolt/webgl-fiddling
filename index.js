@@ -2,7 +2,7 @@ window.addEventListener('DOMContentLoaded', () => {
     let framesElapsed = 0;
 
     const createGround = function (scene) {
-        const size = 1024;
+        const size = 64;
         const halfsize = size / 2;
 
         const ground = new BABYLON.Mesh('ground', scene);
@@ -22,14 +22,21 @@ window.addEventListener('DOMContentLoaded', () => {
             return [px, h, pz];
         }
 
+        const smoothEdges = function (fx, fz, tx, tz, d, mx, mz) {
+            const fh = terrain[fx][fz].h;
+            const th = terrain[tx][tz].h;
+            for (let i = 1; i < d; i++) {
+                terrain[fx + i * mx][fz + i * mz].h = (fh + (th - fh) * (i / d));// * (show ? 10 : 1);
+            }
+        }
+
         for (let x = 0; x < size; x++) {
             for (let z = 0; z < size; z++) {
                 terrain[x][z].utri = 1;
                 terrain[x][z].btri = 1;
-                // if (x < size && z < size) {
+
                 terrain[x][z].uint = terrain[x][z].int | terrain[x + 1][z].int | terrain[x][z + 1].int;
                 terrain[x][z].bint = terrain[x + 1][z + 1].int | terrain[x + 1][z].int | terrain[x][z + 1].int;
-                // }
             }
         }
 
@@ -70,6 +77,31 @@ window.addEventListener('DOMContentLoaded', () => {
 
                             terrain[x][z].bint = terrain[x][z].bint | terrain[x - hk][z].bint | terrain[x][z - hk].bint;
                         }
+                    }
+                }
+            }
+        }
+
+        for (let k = 1024; k > 1; k /= 2) {
+            let hk = k / 2;
+
+            for (let x = 0; x < size; x += k) {
+                for (let z = 0; z < size; z += k) {
+                    if (terrain[x][z].utri === k) {
+                        smoothEdges(x, z, x, z + k, k, 0, 1);
+                        smoothEdges(x, z, x + k, z, k, 1, 0);
+                        smoothEdges(x + k, z, x, z + k, k, -1, 1);
+                    }
+                }
+            }
+
+            for (let x = k - 1; x < size; x += k) {
+                for (let z = k - 1; z < size; z += k) {
+                    if (terrain[x][z].btri === k) {
+                        smoothEdges(x + 1 - k, z + 1, x + 1, z + 1, k, 1, 0);
+                        smoothEdges(x + 1, z + 1 - k, x + 1, z + 1, k, 0, 1);
+                        smoothEdges(x + 1 - k, z + 1, x + 1, z + 1 - k, k, 1, -1);
+
                     }
                 }
             }
@@ -158,12 +190,12 @@ window.addEventListener('DOMContentLoaded', () => {
     const createScene = () => {
         const scene = new BABYLON.Scene(renderEngine);
 
-        const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 10000, new BABYLON.Vector3(0, 0, 0));
+        const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 500 /*10000*/, new BABYLON.Vector3(0, 0, 0));
         camera.attachControl(canvas, true);
         camera.maxZ = 50000;
         camera.maxX = 50000;
         camera.maxY = 50000;
-        camera.wheelPrecision = 0.05;
+        camera.wheelPrecision = 0.3; //0.05;
         const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0));
         const ground = createGround(scene);
         return { scene };
