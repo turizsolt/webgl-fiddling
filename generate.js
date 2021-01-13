@@ -17,7 +17,7 @@ function generateTerrain(size) {
         const first = { x, z, h };
 
         t[first.x][first.z].h = first.h;
-        t[first.x][first.z].int = 1;
+        // t[first.x][first.z].int = 1;
         queue.push(first);
 
         while (queue.length > 0) {
@@ -27,9 +27,10 @@ function generateTerrain(size) {
                 const adj = adjacentPoints(next.x, next.z);
                 for (let i = 0; i < adj.length; i++) {
                     if (t[adj[i].x] && t[adj[i].x][adj[i].z] && t[adj[i].x][adj[i].z].h === 0) {
-                        t[adj[i].x][adj[i].z].h = next.h - 1;
-                        t[adj[i].x][adj[i].z].int = next.h === 1 ? 1 : 0;
-                        queue.push({ ...adj[i], h: next.h - 1 });
+                        const hill = Math.random() < 0.75 ? next.h - 1 : next.h;
+                        t[adj[i].x][adj[i].z].h = hill;
+                        t[adj[i].x][adj[i].z].int = hill % 6 === 0 ? 1 : 0;
+                        queue.push({ ...adj[i], h: hill });
                     }
                 }
             }
@@ -45,8 +46,8 @@ function generateTerrain(size) {
     // raiseHill(Math.random() * size | 0, Math.random() * size | 0, 10);
     // raiseHill(Math.random() * size | 0, Math.random() * size | 0, 10);
     // raiseHill(Math.random() * size | 0, Math.random() * size | 0, 10);
-    // raiseHill(Math.random() * size | 0, Math.random() * size | 0, 10);
-    raiseHill(31, 31, 12);
+    raiseHill(Math.random() * size / 2 | 0 + size / 4, Math.random() * size / 2 | 0 + size / 4, 10);
+    // raiseHill(31, 31, 12);
 
     return t;
 }
