@@ -22,6 +22,88 @@ window.addEventListener('DOMContentLoaded', () => {
             return [px, h, pz];
         }
 
+        for (let x = 0; x < size; x++) {
+            for (let z = 0; z < size; z++) {
+                terrain[x][z].utri = 1;
+                terrain[x][z].btri = 1;
+                // if (x < size && z < size) {
+                terrain[x][z].uint = terrain[x][z].int | terrain[x + 1][z].int | terrain[x][z + 1].int;
+                terrain[x][z].bint = terrain[x + 1][z + 1].int | terrain[x + 1][z].int | terrain[x][z + 1].int;
+                // }
+            }
+        }
+
+        // upper
+        for (let x = 0; x < size; x += 2) {
+            for (let z = 0; z < size; z += 2) {
+                // if mind a 4 egyes
+                if (terrain[x][z].bint === 0) {
+                    terrain[x][z].utri = 2;
+
+                    terrain[x + 1][z].utri = 0;
+                    terrain[x][z + 1].utri = 0;
+                    terrain[x][z].btri = 0;
+
+                    terrain[x][z].uint = terrain[x][z].uint | terrain[x + 1][z].uint | terrain[x][z + 1].uint;
+                }
+            }
+        }
+
+        // below
+        for (let x = 1; x < size; x += 2) {
+            for (let z = 1; z < size; z += 2) {
+                // if mind a 4 egyes
+                if (terrain[x][z].uint === 0) {
+                    terrain[x][z].btri = 2;
+
+                    terrain[x - 1][z].btri = 0;
+                    terrain[x][z - 1].btri = 0;
+                    terrain[x][z].utri = 0;
+
+                    terrain[x][z].bint = terrain[x][z].bint | terrain[x - 1][z].bint | terrain[x][z - 1].bint;
+                }
+            }
+        }
+
+        for (let x = 0; x < size; x += 4) {
+            for (let z = 0; z < size; z += 4) {
+                if (terrain[x][z].utri === 2 &&
+                    terrain[x + 2][z].utri === 2 &&
+                    terrain[x][z + 2].utri === 2 &&
+                    terrain[x + 2 - 1][z + 2 - 1].btri === 2) {
+                    if (terrain[x + 2 - 1][z + 2 - 1].bint === 0) {
+                        terrain[x][z].utri = 4;
+
+                        terrain[x + 2][z].utri = 0;
+                        terrain[x][z + 2].utri = 0;
+                        terrain[x + 2 - 1][z + 2 - 1].btri = 0;
+
+                        terrain[x][z].uint = terrain[x][z].uint | terrain[x + 2][z].uint | terrain[x][z + 2].uint;
+                    }
+                }
+            }
+        }
+
+        for (let x = 3; x < size; x += 4) {
+            for (let z = 3; z < size; z += 4) {
+                console.log(x, z);
+                if (terrain[x][z].btri === 2 &&
+                    terrain[x - 2][z].btri === 2 &&
+                    terrain[x][z - 2].btri === 2 &&
+                    terrain[x + 1 - 2][z + 1 - 2].utri === 2) { // ???
+                    if (terrain[x + 1 - 2][z + 1 - 2].uint === 0) {
+                        terrain[x][z].btri = 4;
+
+                        terrain[x - 2][z].btri = 0;
+                        terrain[x][z - 2].btri = 0;
+                        terrain[x + 1 - 2][z + 1 - 2].utri = 0;
+
+                        terrain[x][z].bint = terrain[x][z].bint | terrain[x - 2][z].bint | terrain[x][z - 2].bint;
+                    }
+                }
+            }
+        }
+
         const positions = [];
         const normals = [];
         const indices = [];
@@ -30,30 +112,47 @@ window.addEventListener('DOMContentLoaded', () => {
         for (let z = 0; z < size; z++) {
             for (let x = 0; x < size; x++) {
 
-                positions.push(...ptc(x, z));
-                positions.push(...ptc(x + 1, z));
-                positions.push(...ptc(x, z + 1));
+                // upper triangle
+                if (terrain[x][z].utri !== 0) {
+                    const tri = terrain[x][z].utri;
+                    positions.push(...ptc(x, z));
+                    positions.push(...ptc(x + tri, z));
+                    positions.push(...ptc(x, z + tri));
 
-                positions.push(...ptc(x + 1, z));
-                positions.push(...ptc(x + 1, z + 1));
-                positions.push(...ptc(x, z + 1));
+                    for (let i = 0; i < 3; i++) normals.push(0, 1, 0);
+                    for (let i = 0; i < 3; i++) indices.push(indicesCount + i);
+                    indicesCount += 3;
 
-                let isHill = false;
-                if (terrain[x][z].h > 0) isHill = true;
-                if (terrain[x + 1][z].h > 0) isHill = true;
-                if (terrain[x][z + 1].h > 0) isHill = true;
-                if (terrain[x + 1][z + 1].h > 0) isHill = true;
+                    let isHill = false;
+                    if (terrain[x][z].h > 0) isHill = true;
+                    if (terrain[x + tri][z].h > 0) isHill = true;
+                    if (terrain[x][z + tri].h > 0) isHill = true;
 
-                for (var i = 0; i < 6; i++) normals.push(0, 1, 0);
+                    const color = isHill ? hillColor : baseColor;
+                    const tint = Math.random() * 0.1;
+                    for (let i = 0; i < 3; i++) colors.push(color.r + tint, color.g + tint, color.b + tint, 1);
+                }
 
-                for (var i = 0; i < 6; i++) indices.push(indicesCount + i);
-                indicesCount += 6;
+                // below triangle
+                if (terrain[x][z].btri !== 0) {
+                    const tri = terrain[x][z].btri;
+                    positions.push(...ptc(x + 1, z + 1 - tri));
+                    positions.push(...ptc(x + 1, z + 1));
+                    positions.push(...ptc(x + 1 - tri, z + 1));
 
-                const color = isHill ? hillColor : baseColor;
-                const tint = Math.random() * 0.05;
-                for (var i = 0; i < 3; i++) colors.push(color.r + tint, color.g + tint, color.b + tint, 1);
-                const tint2 = Math.random() * 0.05;
-                for (var i = 0; i < 3; i++) colors.push(color.r + tint2, color.g + tint2, color.b + tint2, 1);
+                    for (let i = 0; i < 3; i++) normals.push(0, 1, 0);
+                    for (let i = 0; i < 3; i++) indices.push(indicesCount + i);
+                    indicesCount += 3;
+
+                    let isHill = false;
+                    if (terrain[x + 1][z + 1 - tri].h > 0) isHill = true;
+                    if (terrain[x + 1 - tri][z + 1].h > 0) isHill = true;
+                    if (terrain[x + 1][z + 1].h > 0) isHill = true;
+
+                    const color = isHill ? hillColor : baseColor;
+                    const tint = Math.random() * 0.1;
+                    for (let i = 0; i < 3; i++) colors.push(color.r + tint, color.g + tint, color.b + tint, 1);
+                }
             }
         }
 

@@ -6,7 +6,8 @@ function generateTerrain(size) {
         t[i] = [];
         for (let j = 0; j < size; j++) {
             t[i][j] = {
-                h: 0
+                h: 0,
+                int: 0
             }
         }
     }
@@ -16,17 +17,18 @@ function generateTerrain(size) {
         const first = { x, z, h };
 
         t[first.x][first.z].h = first.h;
+        t[first.x][first.z].int = 1;
         queue.push(first);
 
         while (queue.length > 0) {
             const next = queue.shift();
 
-            if (next.h > 1) {
+            if (next.h > 0) {
                 const adj = adjacentPoints(next.x, next.z);
                 for (let i = 0; i < adj.length; i++) {
                     if (t[adj[i].x] && t[adj[i].x][adj[i].z] && t[adj[i].x][adj[i].z].h === 0) {
-
                         t[adj[i].x][adj[i].z].h = next.h - 1;
+                        t[adj[i].x][adj[i].z].int = next.h === 1 ? 1 : 0;
                         queue.push({ ...adj[i], h: next.h - 1 });
                     }
                 }
