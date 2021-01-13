@@ -90,7 +90,13 @@ window.addEventListener('DOMContentLoaded', () => {
                     positions.push(...ptc(x + tri, z));
                     positions.push(...ptc(x, z + tri));
 
-                    for (let i = 0; i < 3; i++) normals.push(0, 1, 0);
+                    const pos = [];
+                    pos.push(new BABYLON.Vector3(...ptc(x, z)));
+                    pos.push(new BABYLON.Vector3(...ptc(x + tri, z)));
+                    pos.push(new BABYLON.Vector3(...ptc(x, z + tri)));
+                    const normal = BABYLON.Vector3.Normalize(BABYLON.Vector3.Cross(pos[0].subtract(pos[1]), pos[2].subtract(pos[1])));
+
+                    for (let i = 0; i < 3; i++) normals.push(normal.x, normal.y, normal.z);
                     for (let i = 0; i < 3; i++) indices.push(indicesCount + i);
                     indicesCount += 3;
 
@@ -111,7 +117,13 @@ window.addEventListener('DOMContentLoaded', () => {
                     positions.push(...ptc(x + 1, z + 1));
                     positions.push(...ptc(x + 1 - tri, z + 1));
 
-                    for (let i = 0; i < 3; i++) normals.push(0, 1, 0);
+                    const pos = [];
+                    pos.push(new BABYLON.Vector3(...ptc(x + 1, z + 1 - tri)));
+                    pos.push(new BABYLON.Vector3(...ptc(x + 1, z + 1)));
+                    pos.push(new BABYLON.Vector3(...ptc(x + 1 - tri, z + 1)));
+                    const normal = BABYLON.Vector3.Normalize(BABYLON.Vector3.Cross(pos[0].subtract(pos[1]), pos[2].subtract(pos[1])));
+                    for (let i = 0; i < 3; i++) normals.push(normal.x, normal.y, normal.z);
+
                     for (let i = 0; i < 3; i++) indices.push(indicesCount + i);
                     indicesCount += 3;
 
