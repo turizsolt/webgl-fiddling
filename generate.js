@@ -36,16 +36,16 @@ function generateTerrain(size) {
         }
     }
 
-    // raiseHill(Math.random() * size | 0, Math.random() * size | 0, 10);
-    // raiseHill(Math.random() * size | 0, Math.random() * size | 0, 8);
-    // raiseHill(Math.random() * size | 0, Math.random() * size | 0, 8);
-    // raiseHill(Math.random() * size | 0, Math.random() * size | 0, 6);
-    // raiseHill(Math.random() * size | 0, Math.random() * size | 0, 6);
-    // raiseHill(Math.random() * size | 0, Math.random() * size | 0, 6);
-    // raiseHill(Math.random() * size | 0, Math.random() * size | 0, 4);
-    // raiseHill(Math.random() * size | 0, Math.random() * size | 0, 4);
-    raiseHill(Math.random() * size | 0, Math.random() * size | 0, 4);
-    raiseHill(Math.random() * size | 0, Math.random() * size | 0, 4);
+    raiseHill(Math.random() * size | 0, Math.random() * size | 0, 50);
+    raiseHill(Math.random() * size | 0, Math.random() * size | 0, 30);
+    raiseHill(Math.random() * size | 0, Math.random() * size | 0, 30);
+    raiseHill(Math.random() * size | 0, Math.random() * size | 0, 20);
+    raiseHill(Math.random() * size | 0, Math.random() * size | 0, 20);
+    raiseHill(Math.random() * size | 0, Math.random() * size | 0, 20);
+    raiseHill(Math.random() * size | 0, Math.random() * size | 0, 10);
+    raiseHill(Math.random() * size | 0, Math.random() * size | 0, 10);
+    raiseHill(Math.random() * size | 0, Math.random() * size | 0, 10);
+    raiseHill(Math.random() * size | 0, Math.random() * size | 0, 10);
 
     return t;
 }
@@ -61,5 +61,5 @@ function adjacentPoints(x, z) {
     ];
 }
 
-const terrain = generateTerrain(17);
+const terrain = generateTerrain(1025);
 fs.writeFileSync('terrain.js', 'const terrain = ' + JSON.stringify(terrain) + ';', 'utf8');

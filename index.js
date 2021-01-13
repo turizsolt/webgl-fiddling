@@ -2,8 +2,8 @@ window.addEventListener('DOMContentLoaded', () => {
     let framesElapsed = 0;
 
     const createGround = function (scene) {
-        const halfsize = 8;
-        const size = 16;
+        const size = 1024;
+        const halfsize = size / 2;
 
         const ground = new BABYLON.Mesh('ground', scene);
         const baseColor = new BABYLON.Color3(0, 0.6, 0);
@@ -15,7 +15,7 @@ window.addEventListener('DOMContentLoaded', () => {
         const zunit = unit * sqrt3 / 2;
 
         const ptc = function (x, z) {
-            px = -(unit * halfsize) + (x * unit) + (z * halfunit);
+            px = -(unit * halfsize) - (zunit * halfsize / 2) + (x * unit) + (z * halfunit);
             pz = -(zunit * halfsize) + (z * zunit);
             h = terrain[x][z].h * unit;
 
@@ -33,43 +33,7 @@ window.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        /*
-
-        // upper
-        for (let x = 0; x < size; x += 2) {
-            for (let z = 0; z < size; z += 2) {
-                // if mind a 4 egyes
-                if (terrain[x][z].bint === 0) {
-                    terrain[x][z].utri = 2;
-
-                    terrain[x + 1][z].utri = 0;
-                    terrain[x][z + 1].utri = 0;
-                    terrain[x][z].btri = 0;
-
-                    terrain[x][z].uint = terrain[x][z].uint | terrain[x + 1][z].uint | terrain[x][z + 1].uint;
-                }
-            }
-        }
-
-        // below
-        for (let x = 1; x < size; x += 2) {
-            for (let z = 1; z < size; z += 2) {
-                // if mind a 4 egyes
-                if (terrain[x][z].uint === 0) {
-                    terrain[x][z].btri = 2;
-
-                    terrain[x - 1][z].btri = 0;
-                    terrain[x][z - 1].btri = 0;
-                    terrain[x][z].utri = 0;
-
-                    terrain[x][z].bint = terrain[x][z].bint | terrain[x - 1][z].bint | terrain[x][z - 1].bint;
-                }
-            }
-        }
-
-        */
-
-        for (let k = 2; k < 8; k *= 2) {
+        for (let k = 2; k < 1025; k *= 2) {
             let hk = k / 2;
 
             for (let x = 0; x < size; x += k) {
@@ -182,8 +146,12 @@ window.addEventListener('DOMContentLoaded', () => {
     const createScene = () => {
         const scene = new BABYLON.Scene(renderEngine);
 
-        const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 200, new BABYLON.Vector3(0, 0, 0));
+        const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 10000, new BABYLON.Vector3(0, 0, 0));
         camera.attachControl(canvas, true);
+        camera.maxZ = 50000;
+        camera.maxX = 50000;
+        camera.maxY = 50000;
+        camera.wheelPrecision = 0.05;
         const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0));
         const ground = createGround(scene);
         return { scene };
