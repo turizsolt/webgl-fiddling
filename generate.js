@@ -62,23 +62,26 @@ function generateTerrain(size) {
         }
     }
 
-    // raiseHill(Math.random() * size | 0, Math.random() * size | 0, 50);
-    // raiseHill(Math.random() * size | 0, Math.random() * size | 0, 30);
-    // raiseHill(Math.random() * size | 0, Math.random() * size | 0, 30);
-    // raiseHill(Math.random() * size | 0, Math.random() * size | 0, 20);
-    // raiseHill(Math.random() * size | 0, Math.random() * size | 0, 20);
-    // raiseHill(Math.random() * size | 0, Math.random() * size | 0, 20);
-    // raiseHill(Math.random() * size | 0, Math.random() * size | 0, 10);
-    // raiseHill(Math.random() * size | 0, Math.random() * size | 0, 10);
-    // raiseHill(Math.random() * size | 0, Math.random() * size | 0, 10);
-    raiseHill(Math.random() * size / 2 | 0 + size / 4, Math.random() * size / 2 | 0 + size / 4, 4);
-    let x, z;
-    do {
-        x = Math.random() * size / 2 | 0 + size / 4;
-        z = Math.random() * size / 2 | 0 + size / 4;
+    raiseHill(Math.random() * size | 0, Math.random() * size | 0, 50);
+    raiseHill(Math.random() * size | 0, Math.random() * size | 0, 30);
+    raiseHill(Math.random() * size | 0, Math.random() * size | 0, 30);
+    raiseHill(Math.random() * size | 0, Math.random() * size | 0, 20);
+    raiseHill(Math.random() * size | 0, Math.random() * size | 0, 20);
+    raiseHill(Math.random() * size | 0, Math.random() * size | 0, 20);
+    raiseHill(Math.random() * size | 0, Math.random() * size | 0, 10);
+    raiseHill(Math.random() * size | 0, Math.random() * size | 0, 10);
+    raiseHill(Math.random() * size | 0, Math.random() * size | 0, 10);
+
+    // raiseHill(Math.random() * size / 2 | 0 + size / 4, Math.random() * size / 2 | 0 + size / 4, 4);
+    for (let i = 0; i < 5; i++) {
+        let x, z;
+        do {
+            x = Math.random() * size | 0;
+            z = Math.random() * size | 0;
+        }
+        while (t[x][z].h !== 0 || t[x][z].int === 1);
+        digLake(x, z, -2);
     }
-    while (t[x][z].h !== 0 || t[x][z].int === 1);
-    digLake(x, z, -2);
     // raiseHill(31, 31, 12);
 
     return t;
@@ -95,5 +98,5 @@ function adjacentPoints(x, z) {
     ];
 }
 
-const terrain = generateTerrain(65);
+const terrain = generateTerrain(1025);
 fs.writeFileSync('terrain.js', 'const terrain = ' + JSON.stringify(terrain) + ';', 'utf8');

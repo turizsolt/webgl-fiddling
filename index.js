@@ -2,12 +2,12 @@ window.addEventListener('DOMContentLoaded', () => {
     let framesElapsed = 0;
 
     const createGround = function (scene) {
-        const size = 64;
+        const size = 1024;
         const halfsize = size / 2;
 
         const ground = new BABYLON.Mesh('ground', scene);
 
-        var skybox = BABYLON.Mesh.CreateBox("skyBox", 4000.0, scene);
+        var skybox = BABYLON.Mesh.CreateBox("skyBox", 20000, scene);
         var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
         skyboxMaterial.backFaceCulling = false;
         skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("./textures/skybox", scene);
