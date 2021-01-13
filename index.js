@@ -33,6 +33,8 @@ window.addEventListener('DOMContentLoaded', () => {
             }
         }
 
+        /*
+
         // upper
         for (let x = 0; x < size; x += 2) {
             for (let z = 0; z < size; z += 2) {
@@ -65,40 +67,45 @@ window.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        for (let x = 0; x < size; x += 4) {
-            for (let z = 0; z < size; z += 4) {
-                if (terrain[x][z].utri === 2 &&
-                    terrain[x + 2][z].utri === 2 &&
-                    terrain[x][z + 2].utri === 2 &&
-                    terrain[x + 2 - 1][z + 2 - 1].btri === 2) {
-                    if (terrain[x + 2 - 1][z + 2 - 1].bint === 0) {
-                        terrain[x][z].utri = 4;
+        */
 
-                        terrain[x + 2][z].utri = 0;
-                        terrain[x][z + 2].utri = 0;
-                        terrain[x + 2 - 1][z + 2 - 1].btri = 0;
+        for (let k = 2; k < 8; k *= 2) {
+            let hk = k / 2;
 
-                        terrain[x][z].uint = terrain[x][z].uint | terrain[x + 2][z].uint | terrain[x][z + 2].uint;
+            for (let x = 0; x < size; x += k) {
+                for (let z = 0; z < size; z += k) {
+                    if (terrain[x][z].utri === hk &&
+                        terrain[x + hk][z].utri === hk &&
+                        terrain[x][z + hk].utri === hk &&
+                        terrain[x + hk - 1][z + hk - 1].btri === hk) {
+                        if (terrain[x + hk - 1][z + hk - 1].bint === 0) {
+                            terrain[x][z].utri = k;
+
+                            terrain[x + hk][z].utri = 0;
+                            terrain[x][z + hk].utri = 0;
+                            terrain[x + hk - 1][z + hk - 1].btri = 0;
+
+                            terrain[x][z].uint = terrain[x][z].uint | terrain[x + hk][z].uint | terrain[x][z + hk].uint;
+                        }
                     }
                 }
             }
-        }
 
-        for (let x = 3; x < size; x += 4) {
-            for (let z = 3; z < size; z += 4) {
-                console.log(x, z);
-                if (terrain[x][z].btri === 2 &&
-                    terrain[x - 2][z].btri === 2 &&
-                    terrain[x][z - 2].btri === 2 &&
-                    terrain[x + 1 - 2][z + 1 - 2].utri === 2) { // ???
-                    if (terrain[x + 1 - 2][z + 1 - 2].uint === 0) {
-                        terrain[x][z].btri = 4;
+            for (let x = k - 1; x < size; x += k) {
+                for (let z = k - 1; z < size; z += k) {
+                    if (terrain[x][z].btri === hk &&
+                        terrain[x - hk][z].btri === hk &&
+                        terrain[x][z - hk].btri === hk &&
+                        terrain[x + 1 - hk][z + 1 - hk].utri === hk) {
+                        if (terrain[x + 1 - hk][z + 1 - hk].uint === 0) {
+                            terrain[x][z].btri = k;
 
-                        terrain[x - 2][z].btri = 0;
-                        terrain[x][z - 2].btri = 0;
-                        terrain[x + 1 - 2][z + 1 - 2].utri = 0;
+                            terrain[x - hk][z].btri = 0;
+                            terrain[x][z - hk].btri = 0;
+                            terrain[x + 1 - hk][z + 1 - hk].utri = 0;
 
-                        terrain[x][z].bint = terrain[x][z].bint | terrain[x - 2][z].bint | terrain[x][z - 2].bint;
+                            terrain[x][z].bint = terrain[x][z].bint | terrain[x - hk][z].bint | terrain[x][z - hk].bint;
+                        }
                     }
                 }
             }
