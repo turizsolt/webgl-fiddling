@@ -2,11 +2,12 @@ window.addEventListener('DOMContentLoaded', () => {
     let framesElapsed = 0;
 
     const createGround = function (scene) {
-        const halfsize = 5;
-        const size = 9;
+        const halfsize = 512;
+        const size = 1023;
 
         const ground = new BABYLON.Mesh('ground', scene);
-        const color = new BABYLON.Color3(0, 0.6, 0);
+        const baseColor = new BABYLON.Color3(0, 0.6, 0);
+        const hillColor = new BABYLON.Color3(0.63, 0.46, 0.18);
 
         const sqrt3 = Math.sqrt(3);
         const unit = 10;
@@ -24,7 +25,7 @@ window.addEventListener('DOMContentLoaded', () => {
         const positions = [];
         const normals = [];
         const indices = [];
-        var indicesCount = 0;
+        let indicesCount = 0;
         const colors = [];
         for (let z = 0; z < size; z++) {
             for (let x = 0; x < size; x++) {
@@ -47,11 +48,18 @@ window.addEventListener('DOMContentLoaded', () => {
                     positions.push(...ptc(x + 1, z + 1));
                 }
 
+                let isHill = false;
+                if (terrain[x][z].h > 0) isHill = true;
+                if (terrain[x + 1][z].h > 0) isHill = true;
+                if (terrain[x][z + 1].h > 0) isHill = true;
+                if (terrain[x + 1][z + 1].h > 0) isHill = true;
+
                 for (var i = 0; i < 6; i++) normals.push(0, 1, 0);
 
                 for (var i = 0; i < 6; i++) indices.push(indicesCount + i);
                 indicesCount += 6;
 
+                const color = isHill ? hillColor : baseColor;
                 const tint = Math.random() * 0.05;
                 for (var i = 0; i < 3; i++) colors.push(color.r + tint, color.g + tint, color.b + tint, 1);
                 const tint2 = Math.random() * 0.05;
@@ -78,7 +86,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const createScene = () => {
         const scene = new BABYLON.Scene(renderEngine);
 
-        const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 10, new BABYLON.Vector3(0, 0, 0));
+        const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 10000, new BABYLON.Vector3(0, 0, 0));
         camera.attachControl(canvas, true);
         const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0));
         const ground = createGround(scene);
