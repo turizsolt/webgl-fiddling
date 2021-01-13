@@ -6,9 +6,23 @@ window.addEventListener('DOMContentLoaded', () => {
         const halfsize = size / 2;
 
         const ground = new BABYLON.Mesh('ground', scene);
+
+        var skybox = BABYLON.Mesh.CreateBox("skyBox", 4000.0, scene);
+        var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+        skyboxMaterial.backFaceCulling = false;
+        skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("./textures/skybox", scene);
+        skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+        skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+        skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+        skyboxMaterial.disableLighting = true;
+        skybox.material = skyboxMaterial;
+
+        var water = new BABYLON.Mesh('water', scene);
+
         const baseColor = new BABYLON.Color3(0, 0.6, 0);
         const hillColor = new BABYLON.Color3(0.63, 0.46, 0.18);
-        const lakeColor = new BABYLON.Color3(0.83, 0.76, 0.58)
+        const lakeColor = new BABYLON.Color3(0.83, 0.76, 0.58);
+        const waterColor = new BABYLON.Color3(0.13, 0.46, 0.88);
 
         const sqrt3 = Math.sqrt(3);
         const unit = 10;
@@ -21,6 +35,13 @@ window.addEventListener('DOMContentLoaded', () => {
             h = terrain[x][z].h * unit;
 
             return [px, h, pz];
+        }
+
+        const ptc0 = function (x, z) {
+            px = -(unit * halfsize) - (zunit * halfsize / 2) + (x * unit) + (z * halfunit);
+            pz = -(zunit * halfsize) + (z * zunit);
+
+            return [px, 0, pz];
         }
 
         const smoothEdges = function (fx, fz, tx, tz, d, mx, mz) {
@@ -112,6 +133,13 @@ window.addEventListener('DOMContentLoaded', () => {
         const normals = [];
         const indices = [];
         let indicesCount = 0;
+
+        const water_positions = [];
+        const water_normals = [];
+        const water_indices = [];
+        let water_indicesCount = 0;
+        const water_colors = [];
+
         const colors = [];
         for (let z = 0; z < size; z++) {
             for (let x = 0; x < size; x++) {
@@ -142,6 +170,19 @@ window.addEventListener('DOMContentLoaded', () => {
                     if (terrain[x][z].h < 0) isLake = true;
                     if (terrain[x + tri][z].h < 0) isLake = true;
                     if (terrain[x][z + tri].h < 0) isLake = true;
+
+                    if (isLake) {
+                        water_positions.push(...ptc0(x, z));
+                        water_positions.push(...ptc0(x + tri, z));
+                        water_positions.push(...ptc0(x, z + tri));
+                        for (let i = 0; i < 3; i++) water_normals.push(0, 1, 0);
+                        for (let i = 0; i < 3; i++) water_indices.push(water_indicesCount + i);
+                        water_indicesCount += 3;
+
+                        const color = waterColor;
+                        const tint = Math.random() * 0.1;
+                        for (let i = 0; i < 3; i++) water_colors.push(color.r + tint, color.g + tint, color.b + tint, 1);
+                    }
 
                     const color = isHill ? hillColor : isLake ? lakeColor : baseColor;
                     const tint = Math.random() * 0.1;
@@ -175,6 +216,20 @@ window.addEventListener('DOMContentLoaded', () => {
                     if (terrain[x + 1 - tri][z + 1].h < 0) isLake = true;
                     if (terrain[x + 1][z + 1].h < 0) isLake = true;
 
+                    if (isLake) {
+                        water_positions.push(...ptc0(x + 1, z + 1 - tri));
+                        water_positions.push(...ptc0(x + 1, z + 1));
+                        water_positions.push(...ptc0(x + 1 - tri, z + 1));
+
+                        for (let i = 0; i < 3; i++) water_normals.push(0, 1, 0);
+                        for (let i = 0; i < 3; i++) water_indices.push(water_indicesCount + i);
+                        water_indicesCount += 3;
+
+                        const color = waterColor;
+                        const tint = Math.random() * 0.1;
+                        for (let i = 0; i < 3; i++) water_colors.push(color.r + tint, color.g + tint, color.b + tint, 1);
+                    }
+
                     const color = isHill ? hillColor : isLake ? lakeColor : baseColor;
                     const tint = Math.random() * 0.1;
                     for (let i = 0; i < 3; i++) colors.push(color.r + tint, color.g + tint, color.b + tint, 1);
@@ -187,10 +242,33 @@ window.addEventListener('DOMContentLoaded', () => {
         ground.setVerticesData(BABYLON.VertexBuffer.ColorKind, colors, true);
         ground.setIndices(indices);
 
+        water.setVerticesData(BABYLON.VertexBuffer.PositionKind, water_positions, true);
+        water.setVerticesData(BABYLON.VertexBuffer.NormalKind, water_normals, true);
+        water.setVerticesData(BABYLON.VertexBuffer.ColorKind, water_colors, true);
+        water.setIndices(water_indices);
+
         const groundMaterial = new BABYLON.StandardMaterial("material", scene);
         groundMaterial.specularColor = new BABYLON.Color3(0.1, 0.1, 0.1);
         ground.material = groundMaterial;
         // groundMaterial.wireframe = true;
+
+        const w2Material = new BABYLON.StandardMaterial("material", scene);
+        w2Material.specularColor = new BABYLON.Color3(0.1, 0.1, 0.1);
+        // water.material = w2Material;
+
+        var waterMaterial = new BABYLON.WaterMaterial("waterMaterial", scene, new BABYLON.Vector2(128, 128));
+        waterMaterial.backFaceCulling = true;
+        waterMaterial.bumpTexture = new BABYLON.Texture("./textures/waterbump.png", scene);
+        waterMaterial.windForce = -10;
+        waterMaterial.bumpHeight = 0.1;
+        waterMaterial.windDirection = new BABYLON.Vector2(1, 1);
+        waterMaterial.waterColor = new BABYLON.Color3(0, 100 / 255, 221 / 255);
+        waterMaterial.waveHeight = 0;
+        waterMaterial.waveLength = 0;
+        waterMaterial.colorBlendFactor = 0.5;
+        waterMaterial.addToRenderList(skybox);
+        waterMaterial.addToRenderList(ground);
+        water.material = waterMaterial;
 
         return ground;
     }
