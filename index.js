@@ -8,6 +8,7 @@ window.addEventListener('DOMContentLoaded', () => {
         const ground = new BABYLON.Mesh('ground', scene);
         const baseColor = new BABYLON.Color3(0, 0.6, 0);
         const hillColor = new BABYLON.Color3(0.63, 0.46, 0.18);
+        const lakeColor = new BABYLON.Color3(0.83, 0.76, 0.58)
 
         const sqrt3 = Math.sqrt(3);
         const unit = 10;
@@ -137,7 +138,12 @@ window.addEventListener('DOMContentLoaded', () => {
                     if (terrain[x + tri][z].h > 0) isHill = true;
                     if (terrain[x][z + tri].h > 0) isHill = true;
 
-                    const color = isHill ? hillColor : baseColor;
+                    let isLake = false;
+                    if (terrain[x][z].h < 0) isLake = true;
+                    if (terrain[x + tri][z].h < 0) isLake = true;
+                    if (terrain[x][z + tri].h < 0) isLake = true;
+
+                    const color = isHill ? hillColor : isLake ? lakeColor : baseColor;
                     const tint = Math.random() * 0.1;
                     for (let i = 0; i < 3; i++) colors.push(color.r + tint, color.g + tint, color.b + tint, 1);
                 }
@@ -164,7 +170,12 @@ window.addEventListener('DOMContentLoaded', () => {
                     if (terrain[x + 1 - tri][z + 1].h > 0) isHill = true;
                     if (terrain[x + 1][z + 1].h > 0) isHill = true;
 
-                    const color = isHill ? hillColor : baseColor;
+                    let isLake = false;
+                    if (terrain[x + 1][z + 1 - tri].h < 0) isLake = true;
+                    if (terrain[x + 1 - tri][z + 1].h < 0) isLake = true;
+                    if (terrain[x + 1][z + 1].h < 0) isLake = true;
+
+                    const color = isHill ? hillColor : isLake ? lakeColor : baseColor;
                     const tint = Math.random() * 0.1;
                     for (let i = 0; i < 3; i++) colors.push(color.r + tint, color.g + tint, color.b + tint, 1);
                 }
