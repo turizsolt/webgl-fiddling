@@ -62,6 +62,18 @@ function generateTerrain(size) {
         }
     }
 
+    for (let i = 0; i < size; i++) {
+        t[i][100].h = 0;
+        t[i][101].h = 1;
+        t[i][102].h = 1;
+        t[i][103].h = 0;
+
+        t[i][100].int = 1;
+        t[i][101].int = 1;
+        t[i][102].int = 1;
+        t[i][103].int = 1;
+    }
+
     raiseHill(Math.random() * size | 0, Math.random() * size | 0, 50);
     raiseHill(Math.random() * size | 0, Math.random() * size | 0, 30);
     raiseHill(Math.random() * size | 0, Math.random() * size | 0, 30);

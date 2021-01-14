@@ -11,6 +11,13 @@ window.addEventListener('DOMContentLoaded', () => {
             speed: 0.1
         });
     }
+    const trainObjects = [];
+    for (let i = 0; i < count; i++) {
+        trainObjects.push({
+            percentage: 1 / count * i,
+            speed: 0.001
+        });
+    }
 
     const createGround = function (scene) {
         const size = 1024;
@@ -47,6 +54,11 @@ window.addEventListener('DOMContentLoaded', () => {
 
             return [px, h, pz];
         }
+
+        console.log(ptc(0, 101));
+        console.log(ptc(1024, 101));
+        console.log(ptc(0, 102));
+        console.log(ptc(1024, 102));
 
         const ptc0 = function (x, z) {
             px = -(unit * halfsize) - (zunit * halfsize / 2) + (x * unit) + (z * halfunit);
@@ -290,56 +302,57 @@ window.addEventListener('DOMContentLoaded', () => {
     const createScene = () => {
         const scene = new BABYLON.Scene(renderEngine);
 
-        /*
-        const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 500 /*10000*/ /*, new BABYLON.Vector3(0, 0, 0));
-        camera.attachControl(canvas, true);
-        camera.maxZ = 50000;
-        camera.maxX = 50000;
-        camera.maxY = 50000;
-        camera.wheelPrecision = 0.3; //0.05;
-        */
-
         const boxes = [];
+        const trains = [];
         const boxMesh = BABYLON.MeshBuilder.CreateBox("box", { width: 14, height: 4.5, depth: 3 });
         const boxMaterial = new BABYLON.StandardMaterial("material", scene);
         boxMaterial.diffuseColor = new BABYLON.Color3(1, 0, 0);
         boxMesh.material = boxMaterial;
         for (let i = 0; i < count; i++) {
             boxes.push(boxMesh.createInstance());
+            trains.push(boxMesh.createInstance());
         }
         boxMesh.setEnabled(false);
 
-        // Parameters: name, position, scene
-        var camera = new BABYLON.FollowCamera("FollowCam", new BABYLON.Vector3(0, 10, -10), scene);
-        // The goal distance of camera from target
-        camera.radius = 1;
-        // The goal height of camera above local origin (centre) of target
-        camera.heightOffset = 3;
-        // The goal rotation of camera around local origin (centre) of target in x y plane
-        camera.rotationOffset = 0;
-        // Acceleration of camera in moving from current to goal position
-        camera.cameraAcceleration = 0.1;//005;
-        // The speed at which acceleration is halted
-        camera.maxCameraSpeed = 100;
-        // This attaches the camera to the canvas
+
+        const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 500, new BABYLON.Vector3(0, 0, 0));
         camera.attachControl(canvas, true);
-        // NOTE:: SET CAMERA TARGET AFTER THE TARGET'S CREATION AND NOTE CHANGE FROM BABYLONJS V 2.5
-        // targetMesh created here.
-        camera.lockedTarget = boxes[0]; //version 2.5 onwards
         camera.maxZ = 50000;
         camera.maxX = 50000;
         camera.maxY = 50000;
+        camera.wheelPrecision = 0.3; //0.05;
 
-
+        /*
+                // Parameters: name, position, scene
+                var camera = new BABYLON.FollowCamera("FollowCam", new BABYLON.Vector3(0, 10, -10), scene);
+                // The goal distance of camera from target
+                camera.radius = 1;
+                // The goal height of camera above local origin (centre) of target
+                camera.heightOffset = 3;
+                // The goal rotation of camera around local origin (centre) of target in x y plane
+                camera.rotationOffset = 0;
+                // Acceleration of camera in moving from current to goal position
+                camera.cameraAcceleration = 0.1;//005;
+                // The speed at which acceleration is halted
+                camera.maxCameraSpeed = 100;
+                // This attaches the camera to the canvas
+                camera.attachControl(canvas, true);
+                // NOTE:: SET CAMERA TARGET AFTER THE TARGET'S CREATION AND NOTE CHANGE FROM BABYLONJS V 2.5
+                // targetMesh created here.
+                camera.lockedTarget = trains[0]; //version 2.5 onwards
+                camera.maxZ = 50000;
+                camera.maxX = 50000;
+                camera.maxY = 50000;
+        */
 
         const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0));
         const ground = createGround(scene);
 
 
-        return { scene, boxes };
+        return { scene, boxes, trains };
     }
 
-    const { scene, boxes } = createScene();
+    const { scene, boxes, trains } = createScene();
 
     renderEngine.runRenderLoop(() => {
         scene.render();
@@ -355,6 +368,14 @@ window.addEventListener('DOMContentLoaded', () => {
             boxes[i].position.z = objects[i].position.z - objects[i].radius * Math.cos(rot);
             boxes[i].position.y = objects[i].position.y;
             boxes[i].rotation.y = -rot;
+
+            const perc = (trainObjects[i].percentage + trainObjects[i].speed * framesElapsed);
+            const perc2 = perc - Math.trunc(perc);
+            trains[i].position.x = (-6832) + (3408 + 6832) * perc2;
+            trains[i].position.z = -3555;
+            trains[i].position.y = 11.5;
+            trains[i].rotation.y = 0;
+            // if (i === 0) console.log(trainObjects[i].percentage, trainObjects[i].speed, perc, perc2);
         }
     });
 
