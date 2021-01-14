@@ -290,14 +290,14 @@ window.addEventListener('DOMContentLoaded', () => {
     const createScene = () => {
         const scene = new BABYLON.Scene(renderEngine);
 
-        const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 500 /*10000*/, new BABYLON.Vector3(0, 0, 0));
+        /*
+        const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 500 /*10000*/ /*, new BABYLON.Vector3(0, 0, 0));
         camera.attachControl(canvas, true);
         camera.maxZ = 50000;
         camera.maxX = 50000;
         camera.maxY = 50000;
         camera.wheelPrecision = 0.3; //0.05;
-        const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0));
-        const ground = createGround(scene);
+        */
 
         const boxes = [];
         const boxMesh = BABYLON.MeshBuilder.CreateBox("box", { width: 14, height: 4.5, depth: 3 });
@@ -308,6 +308,34 @@ window.addEventListener('DOMContentLoaded', () => {
             boxes.push(boxMesh.createInstance());
         }
         boxMesh.setEnabled(false);
+
+        // Parameters: name, position, scene
+        var camera = new BABYLON.FollowCamera("FollowCam", new BABYLON.Vector3(0, 10, -10), scene);
+        // The goal distance of camera from target
+        camera.radius = 1;
+        // The goal height of camera above local origin (centre) of target
+        camera.heightOffset = 3;
+        // The goal rotation of camera around local origin (centre) of target in x y plane
+        camera.rotationOffset = 0;
+        // Acceleration of camera in moving from current to goal position
+        camera.cameraAcceleration = 0.1;//005;
+        // The speed at which acceleration is halted
+        camera.maxCameraSpeed = 100;
+        // This attaches the camera to the canvas
+        camera.attachControl(canvas, true);
+        // NOTE:: SET CAMERA TARGET AFTER THE TARGET'S CREATION AND NOTE CHANGE FROM BABYLONJS V 2.5
+        // targetMesh created here.
+        camera.lockedTarget = boxes[0]; //version 2.5 onwards
+        camera.maxZ = 50000;
+        camera.maxX = 50000;
+        camera.maxY = 50000;
+
+
+
+        const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0));
+        const ground = createGround(scene);
+
+
         return { scene, boxes };
     }
 
