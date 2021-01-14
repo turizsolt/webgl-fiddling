@@ -18,6 +18,20 @@ window.addEventListener('DOMContentLoaded', () => {
             speed: 0.001
         });
     }
+    const houseCount = 2000;
+    const houseObjects = [];
+    for (let i = 0; i < houseCount; i++) {
+        const radius = (Math.random() * 180 | 0) + 800;
+        const angle = Math.random() * Math.PI * 2;
+        houseObjects.push({
+            position: {
+                x: Math.sin(angle) * radius,
+                y: 0,
+                z: Math.cos(angle) * radius,
+            },
+            type: Math.random() * 5 | 0
+        });
+    }
 
     const createGround = function (scene) {
         const size = 1024;
@@ -296,6 +310,39 @@ window.addEventListener('DOMContentLoaded', () => {
     const renderEngine = new BABYLON.Engine(canvas, true);
     const createScene = () => {
         const scene = new BABYLON.Scene(renderEngine);
+
+        const houseMeshes = [
+            BABYLON.MeshBuilder.CreateBox("house0", { width: 10, height: 20, depth: 10 }),
+            BABYLON.MeshBuilder.CreateBox("house1", { width: 12, height: 40, depth: 8 }),
+            BABYLON.MeshBuilder.CreateBox("house2", { width: 14, height: 30, depth: 6 }),
+            BABYLON.MeshBuilder.CreateBox("house3", { width: 8, height: 25, depth: 10 }),
+            BABYLON.MeshBuilder.CreateBox("house4", { width: 16, height: 35, depth: 12 })
+        ];
+        const houseMaterials = [
+            new BABYLON.StandardMaterial("houseMaterial0", scene),
+            new BABYLON.StandardMaterial("houseMaterial1", scene),
+            new BABYLON.StandardMaterial("houseMaterial2", scene),
+            new BABYLON.StandardMaterial("houseMaterial3", scene),
+            new BABYLON.StandardMaterial("houseMaterial4", scene)
+        ];
+        houseMaterials[0].diffuseColor = new BABYLON.Color3(1, 0, 0);
+        houseMaterials[1].diffuseColor = new BABYLON.Color3(0, 1, 0);
+        houseMaterials[2].diffuseColor = new BABYLON.Color3(0, 0, 1);
+        houseMaterials[3].diffuseColor = new BABYLON.Color3(0, 1, 1);
+        houseMaterials[4].diffuseColor = new BABYLON.Color3(1, 0, 1);
+        for (let i = 0; i < 5; i++) {
+            houseMeshes[i].material = houseMaterials[i];
+        }
+
+        for (let i = 0; i < houseCount; i++) {
+            const house = houseMeshes[houseObjects[i].type].createInstance();
+            house.position.y = [10, 20, 15, 12.5, 17.5][houseObjects[i].type];
+            house.position.x = houseObjects[i].position.x;
+            house.position.z = houseObjects[i].position.z;
+        }
+        for (let i = 0; i < 5; i++) {
+            houseMeshes[i].setEnabled(false);
+        }
 
         const boxes = [];
         const trains = [];
