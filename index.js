@@ -1,6 +1,17 @@
 window.addEventListener('DOMContentLoaded', () => {
     let framesElapsed = 0;
 
+    const count = 60;
+    const objects = [];
+    for (let i = 0; i < count; i++) {
+        objects.push({
+            position: { x: 0, y: 1.5, z: 0 },
+            radius: 1000,
+            rotation: Math.PI * 2 / count * i,
+            speed: 0.1
+        });
+    }
+
     const createGround = function (scene) {
         const size = 1024;
         const halfsize = size / 2;
@@ -287,10 +298,20 @@ window.addEventListener('DOMContentLoaded', () => {
         camera.wheelPrecision = 0.3; //0.05;
         const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0));
         const ground = createGround(scene);
-        return { scene };
+
+        const boxes = [];
+        const boxMesh = BABYLON.MeshBuilder.CreateBox("box", { width: 14, height: 4.5, depth: 3 });
+        const boxMaterial = new BABYLON.StandardMaterial("material", scene);
+        boxMaterial.diffuseColor = new BABYLON.Color3(1, 0, 0);
+        boxMesh.material = boxMaterial;
+        for (let i = 0; i < count; i++) {
+            boxes.push(boxMesh.createInstance());
+        }
+        boxMesh.setEnabled(false);
+        return { scene, boxes };
     }
 
-    const { scene } = createScene();
+    const { scene, boxes } = createScene();
 
     renderEngine.runRenderLoop(() => {
         scene.render();
@@ -298,6 +319,14 @@ window.addEventListener('DOMContentLoaded', () => {
         framesElapsed++;
         if (framesElapsed % 100 === 0) {
             fpsLabel.innerHTML = renderEngine.getFps().toFixed() + " fps";
+        }
+
+        for (let i = 0; i < count; i++) {
+            const rot = objects[i].rotation + objects[i].speed * framesElapsed / Math.PI / 10;
+            boxes[i].position.x = objects[i].position.x + objects[i].radius * Math.sin(rot);
+            boxes[i].position.z = objects[i].position.z - objects[i].radius * Math.cos(rot);
+            boxes[i].position.y = objects[i].position.y;
+            boxes[i].rotation.y = -rot;
         }
     });
 
