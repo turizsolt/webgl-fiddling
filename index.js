@@ -55,11 +55,6 @@ window.addEventListener('DOMContentLoaded', () => {
             return [px, h, pz];
         }
 
-        console.log(ptc(0, 101));
-        console.log(ptc(1024, 101));
-        console.log(ptc(0, 102));
-        console.log(ptc(1024, 102));
-
         const ptc0 = function (x, z) {
             px = -(unit * halfsize) - (zunit * halfsize / 2) + (x * unit) + (z * halfunit);
             pz = -(zunit * halfsize) + (z * zunit);
@@ -348,11 +343,18 @@ window.addEventListener('DOMContentLoaded', () => {
         const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0));
         const ground = createGround(scene);
 
+        var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
-        return { scene, boxes, trains };
+        var text1 = new BABYLON.GUI.TextBlock();
+        text1.text = "Train 0";
+        text1.color = "white";
+        text1.fontSize = 12;
+        advancedTexture.addControl(text1);
+
+        return { scene, boxes, trains, camera, text1 };
     }
 
-    const { scene, boxes, trains } = createScene();
+    const { scene, boxes, trains, camera, text1 } = createScene();
 
     renderEngine.runRenderLoop(() => {
         scene.render();
@@ -375,7 +377,16 @@ window.addEventListener('DOMContentLoaded', () => {
             trains[i].position.z = -3555;
             trains[i].position.y = 11.5;
             trains[i].rotation.y = 0;
-            // if (i === 0) console.log(trainObjects[i].percentage, trainObjects[i].speed, perc, perc2);
+
+            var p = BABYLON.Vector3.Project(boxes[0].position,
+                BABYLON.Matrix.Identity(),
+                scene.getTransformMatrix(),
+                scene.activeCamera.viewport
+            );
+            const width = canvas.width;
+            const height = canvas.height;
+            text1.left = -(width / 2) + (p.x * width);
+            text1.top = -(height / 2) + (p.y * height) - 12;
         }
     });
 
