@@ -366,6 +366,7 @@ window.addEventListener('DOMContentLoaded', () => {
         camera1.wheelPrecision = 0.3; //0.05;
 
 
+        /*
         const camera2 = new BABYLON.FollowCamera("FollowCam2", new BABYLON.Vector3(0, 10, -10), scene);
         camera2.radius = 1;
         camera2.heightOffset = 3;
@@ -377,7 +378,7 @@ window.addEventListener('DOMContentLoaded', () => {
         camera2.maxZ = 50000;
         camera2.maxX = 50000;
         camera2.maxY = 50000;
-
+*/
         /*
         const camera3 = new BABYLON.FollowCamera("FollowCam3", new BABYLON.Vector3(0, 10, -10), scene);
         camera3.radius = 5;
@@ -404,10 +405,12 @@ window.addEventListener('DOMContentLoaded', () => {
         camera4.maxY = 50000;
 */
 
-        scene.activeCameras.push(camera1);
-        scene.activeCameras.push(camera2);
-        camera1.viewport = new BABYLON.Viewport(0.5, 0, 0.5, 1);
-        camera2.viewport = new BABYLON.Viewport(0, 0, 0.5, 1);
+        /*
+                scene.activeCameras.push(camera1);
+                scene.activeCameras.push(camera2);
+                camera1.viewport = new BABYLON.Viewport(0.5, 0, 0.5, 1);
+                camera2.viewport = new BABYLON.Viewport(0, 0, 0.5, 1);
+                */
 
         /*
         scene.activeCameras.push(camera3);
@@ -427,7 +430,7 @@ window.addEventListener('DOMContentLoaded', () => {
         text1.text = "Train 0";
         text1.color = "white";
         text1.fontSize = 12;
-        // advancedTexture.addControl(text1);
+        advancedTexture.addControl(text1);
 
         return { scene, boxes, trains, text1 };
     }
